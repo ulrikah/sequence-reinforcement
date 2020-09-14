@@ -16,7 +16,6 @@ class SequenceActions:
 class MidiEnv(gym.Env):
     def __init__(self, n_bars = 4, beats_per_bar = 4):
         '''Initialises a np array of fixed length for kick and snare'''
-
         self.n_bars = n_bars
         self.beats_per_bar = beats_per_bar
         

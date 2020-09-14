@@ -3,8 +3,8 @@ from agent import Agent
 from env import MidiEnv
 
 # System variables that should be set from CLI args
-N_EPISODES = 500
-MAX_STEPS = 64
+N_EPISODES = 10000
+MAX_STEPS = 100
 BATCH_SIZE = 128
 LOG = True
 
