@@ -19,11 +19,7 @@ class Agent:
         self.optimizer = torch.optim.Adam(self.model.parameters())
         self.loss = nn.MSELoss()
 
-    def select_action(self, state, eps_start = 0.9, eps_end = 0.05, eps_decay = 200):
-        '''
-        if (np.random.randn() < eps):
-            return self.env.action_space.sample()
-        '''
+    def get_action(self, state):
         state = torch.FloatTensor(state).float().unsqueeze(0)
         qvals = self.model.forward(state)
         # quantize to 0 or 1
