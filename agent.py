@@ -21,10 +21,8 @@ class Agent:
 
     def get_action(self, state):
         state = torch.FloatTensor(state).float().unsqueeze(0)
-        qvals = self.model.forward(state)
-        # quantize to 0 or 1
-        action = np.where(qvals.detach().numpy() >= 0.5, 1, 0).squeeze()
-        
+        q_vals = self.model.forward(state)
+        action = q_vals.detach().numpy().squeeze()
         return action
 
     def compute_loss(self, batch):
@@ -34,8 +32,6 @@ class Agent:
         rewards = torch.FloatTensor(rewards)
         next_states = torch.FloatTensor(next_states)
         dones = torch.FloatTensor(dones)
-
-        # import pdb; pdb.set_trace()
 
         curr_q = self.model.forward(states).gather(1, actions)
         next_q = self.model.forward(next_states)
