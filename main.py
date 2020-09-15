@@ -32,7 +32,8 @@ def main():
         max_steps=MAX_STEPS,
         batch_size=BATCH_SIZE,
         log=LOG,
-        save_model_to=SAVE_MODEL_TO
+        save_model_to=SAVE_MODEL_TO,
+        load_model_from='checkpoints/checkpoint_100_1600178929.cpt'
     )
 
 if __name__ == "__main__":
