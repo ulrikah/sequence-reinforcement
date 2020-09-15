@@ -1,7 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.autograd as autograd
-import numpy as np
 
 from replay_buffer import ReplayBuffer
 from dqn import DQN
@@ -16,7 +14,7 @@ class Agent:
 
         self.model = DQN(env.action_space.n)
 
-        self.optimizer = torch.optim.Adam(self.model.parameters())
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=learning_rate)
         self.loss = nn.MSELoss()
 
     def get_action(self, state):

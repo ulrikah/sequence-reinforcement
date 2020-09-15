@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from time import time
 
-def train(env, agent, n_episodes, max_steps, batch_size, render=True, log=True):
+def train(env, agent, n_episodes, max_steps, batch_size, render=True, log=True, save_model=False):
     if log:
         log_interval = n_episodes // 10
 
@@ -17,10 +17,8 @@ def train(env, agent, n_episodes, max_steps, batch_size, render=True, log=True):
         should_explore = np.random.random_sample() < eps
 
         for step in range(max_steps):
-            # exploration
             if should_explore:
                 action = env.action_space.sample()
-            # exploitation
             else:
                 action = agent.get_action(state)
 
@@ -39,11 +37,13 @@ def train(env, agent, n_episodes, max_steps, batch_size, render=True, log=True):
 
         if episode % log_interval == 0:
             if log:
-                print("Episode", episode, 
-                    ":", np.mean(episode_rewards[-1]), 
-                    "" if should_explore else "🤖")
+                action = agent.get_action(state)
+                reward = env.calculate_reward(obs, action)
+                print("Episode", episode, ":", reward)
             if render:
                 env.render()
+            if save_model and episode > 0:
+                print("💾 SAVING MODEL AT EPISODE", episode)
 
 
     if log:
