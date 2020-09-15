@@ -19,3 +19,15 @@
     -> functions: calculate_reward(kick_seq, snare_seq)
 
 - log exploration vs. exploitation ratio for each episode
+
+
+## Questions
+
+
+- What criteria should I use for done?
+
+- rewards are in range (0.0, 1.0), but random sampling yields a reward of ~0.5
+
+- First step in the snare sequence almost always ends up as close to 1. Any way to avoid that?
+
+- NN spits out sequences between (0.0, 1.0) --> what is the correct

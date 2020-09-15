@@ -23,6 +23,10 @@ class MidiEnv(gym.Env):
         
         if self.metric == "diff":
             self.reward_range = (0.0, 1.0)
+            self.done_range = (0.5, 1.0)
+        
+        if self.metric == "snare_sum":
+            self.reward_range = (0.0, 1.0)
             self.done_range = (0.2, 0.9)
     
     def get_n_steps(self):
@@ -37,10 +41,13 @@ class MidiEnv(gym.Env):
     def step(self, action : np.ndarray):
         self.snare_seq = action
         reward = self.calculate_reward(self.kick_seq, action)
-
+        
+        '''
         # episodes that go outside this range should be considered done
         _min, _max = self.done_range
         done = not _min <= reward <= _max
+        '''
+        done = False
 
         return self.kick_seq, reward, done, {}
     
@@ -60,6 +67,9 @@ class MidiEnv(gym.Env):
         if self.metric == "diff":
             diff = np.abs(kick_seq - snare_seq)
             return np.sum(diff / self.get_n_steps())
+
+        if self.metric == "snare_sum":
+            return np.sum(snare_seq / self.get_n_steps())
 
     def render(self, log=True):
         '''Renders the np array as a sequence of MIDI notes'''
