@@ -1,8 +1,9 @@
+import torch
 import numpy as np
 from matplotlib import pyplot as plt
 from time import time
 
-def train(env, agent, n_episodes, max_steps, batch_size, render=True, log=True, save_model=False):
+def train(env, agent, n_episodes, max_steps, batch_size, render=True, log=True, save_model_to=None):
     if log:
         log_interval = n_episodes // 10
 
@@ -42,8 +43,14 @@ def train(env, agent, n_episodes, max_steps, batch_size, render=True, log=True, 
                 print("Episode", episode, ":", reward)
             if render:
                 env.render()
-            if save_model and episode > 0:
-                print("💾 SAVING MODEL AT EPISODE", episode)
+            if save_model_to is not None and episode > 0:
+                path = f"{save_model_to}checkpoint_{episode}_{int(time())}.cpt"
+                print("💾 Saving model to", path)
+                torch.save({
+                    'episode': episode,
+                    'model_state_dict': agent.model.state_dict(),
+                    'optimizer_state_dict': agent.optimizer.state_dict()
+                }, path)
 
 
     if log:

@@ -5,7 +5,6 @@
 - weight initialisation does have a substantial impact. what to do?
 
 - epsilon: should explore/exploit be on a per episode or per step level?
-
 - evaluating when I'm done seems a bit random
 
 ## To do
