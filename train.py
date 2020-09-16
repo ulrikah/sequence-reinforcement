@@ -3,9 +3,10 @@ import numpy as np
 from matplotlib import pyplot as plt
 from time import time, asctime
 
-def train(env, agent, n_episodes, max_steps, batch_size, 
+def train(env, agent, n_episodes, max_steps, batch_size,
     render=True, 
-    log=True, 
+    log=True,
+    log_interval=100, 
     save_model_to=None, 
     load_model_from=None
 ):
@@ -20,15 +21,17 @@ def train(env, agent, n_episodes, max_steps, batch_size,
         agent.model.load_state_dict(checkpoint['model_state_dict'])
         agent.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         
-        
     else:
         episode_rewards = []
         epsilons = []
         start_from = 0
     
+    assert n_episodes > start_from, f"The loaded model has already been trained for more than {n_episodes}"
+    
     if log:
-        log_interval = n_episodes // 10
+        info_interval = (n_episodes - start_from) // log_interval
 
+    actions = []
     for episode in range(start_from, n_episodes):
         state = env.reset()
         episode_reward = []
@@ -43,8 +46,9 @@ def train(env, agent, n_episodes, max_steps, batch_size,
             else:
                 action = agent.get_action(state)
 
-            obs, reward, done, _ = env.step(action)
-            agent.replay_buffer.push(state, action, reward, obs, done)
+            actions.append(action)
+            next_state, reward, done, _ = env.step(action)
+            agent.replay_buffer.push(state, action, reward, next_state, done)
             episode_reward.append(reward)
 
             if len(agent.replay_buffer) > batch_size:
@@ -54,16 +58,15 @@ def train(env, agent, n_episodes, max_steps, batch_size,
                 episode_rewards.append(np.mean(episode_reward))
                 break
 
-            state = obs
+            state = next_state
 
-        if episode % log_interval == 0:
-            if log:
-                action = agent.get_action(state)
-                reward = env.calculate_reward(obs, action)
-                print("Episode", episode, ":", reward)
+        if log and episode % info_interval == 0:
+            print("Reward for episode", episode, ":", reward)
+            print(state, "[state]")
+            print(next_state, "[next_state]")
             if render:
                 env.render()
-            if save_model_to is not None and episode > 0:
+            if save_model_to is not None and episode > start_from:
                 path = f"{save_model_to}checkpoint_{episode}_{int(time())}.cpt"
                 print("💾 Saving model to", path)
                 torch.save({
@@ -78,8 +81,13 @@ def train(env, agent, n_episodes, max_steps, batch_size,
 
     if log:
         filename = f"plots/fig_{int(time())}"
+        '''
         plt.plot([np.mean(rewards) for rewards in episode_rewards], label="Mean rewards")
         plt.plot(epsilons, label="Epsilon")
+        '''
+        _actions = np.array(actions)
+        plt.hist(actions, bins=np.arange(_actions.min(), _actions.max() + 1), label='Actions')
+        
         plt.legend()
         plt.savefig(filename)
         print(f"Saved {filename}.png to disk")

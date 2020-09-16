@@ -1,38 +1,22 @@
 import torch.nn as nn
 
 class DQN(nn.Module):
-    
-    def __init__(self, n_steps):
+
+    def __init__(self, in_dim, out_dim):
         super().__init__()
-        
+
         self.fc = nn.Sequential(
-            nn.Linear(n_steps, n_steps * 2),
-            # nn.BatchNorm1d(n_steps * 2),
+            nn.Linear(in_dim, in_dim * 2),
             nn.Sigmoid(),
-            
-            nn.Linear(n_steps * 2, n_steps * 4),
-            # nn.BatchNorm1d(n_steps * 4),
+            nn.Linear(in_dim * 2, in_dim * 4),
             nn.Sigmoid(),
-            
-            nn.Linear(n_steps * 4, n_steps * 4),
-            # nn.BatchNorm1d(n_steps * 2),
+            nn.Linear(in_dim * 4, in_dim * 4),
             nn.Sigmoid(),
-            
-            nn.Linear(n_steps * 4 , n_steps * 2),
+            nn.Linear(in_dim * 4, in_dim * 2),
             nn.Sigmoid(),
-            
-            nn.Linear(n_steps * 2 , n_steps),
-            nn.Sigmoid()
+            nn.Linear(in_dim * 2, out_dim),
+            nn.Softmax(dim=0)
         )
-        
-        '''
-        TO DO: consider other activations functions at the network head to output more extreme values, i.e. close to 0 or 1
-        
-            - Softmax is no good since it sums to 1, which is not what we want
-            - Heaviside step ?
-        '''
-        
     def forward(self, x):
-        # print("\tForward input has shape", x.shape)
         x = self.fc(x)
         return x
