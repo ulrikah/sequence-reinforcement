@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch.distributions import Categorical
 import numpy as np
 
 from replay_buffer import ReplayBuffer
@@ -18,9 +19,9 @@ class Agent:
 
     def get_action(self, state):
         state = torch.FloatTensor(state).unsqueeze(0)
-        q_vals = self.model.forward(state)
-        action = np.argmax(q_vals.detach().squeeze().numpy())
-        return action
+        q_vals = self.model.forward(state).detach().squeeze()
+        distribution = Categorical(q_vals)
+        return distribution.sample().item()
 
     def compute_loss(self, batch):
         states, actions, rewards, next_states, _ = batch

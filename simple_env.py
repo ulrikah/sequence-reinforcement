@@ -23,10 +23,7 @@ class SimpleEnv(gym.Env):
             self.snare_seq[action] = 1 - self.snare_seq[action]
 
         reward = self.calculate_reward(self.kick_seq, self.snare_seq)
-
-
-        # if action == self.n_steps we punish the system a bit
-
+        
         done = False
         return self.get_state(), reward, done, {}
 

@@ -15,7 +15,7 @@ class DQN(nn.Module):
             nn.Linear(in_dim * 4, in_dim * 2),
             nn.Sigmoid(),
             nn.Linear(in_dim * 2, out_dim),
-            nn.Softmax(dim=0)
+            nn.Softmax(dim=1)
         )
     def forward(self, x):
         x = self.fc(x)

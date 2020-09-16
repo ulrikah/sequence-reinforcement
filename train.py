@@ -1,7 +1,7 @@
 import torch
+from time import time, asctime
 import numpy as np
 from matplotlib import pyplot as plt
-from time import time, asctime
 
 def train(env, agent, n_episodes, max_steps, batch_size,
     render=True, 
@@ -61,7 +61,7 @@ def train(env, agent, n_episodes, max_steps, batch_size,
             state = next_state
 
         if log and episode % info_interval == 0:
-            print("Reward for episode", episode, ":", reward)
+            print("Reward for episode", episode, ":", reward, "with action", action)
             print(state, "[state]")
             print(next_state, "[next_state]")
             if render:
@@ -81,16 +81,22 @@ def train(env, agent, n_episodes, max_steps, batch_size,
 
     if log:
         filename = f"plots/fig_{int(time())}"
-        '''
+
+        # performance
+        plt.subplot(1, 2, 1)
         plt.plot([np.mean(rewards) for rewards in episode_rewards], label="Mean rewards")
         plt.plot(epsilons, label="Epsilon")
-        '''
+        plt.legend()
+
+        # action distribution
+        plt.subplot(1, 2, 2)
         _actions = np.array(actions)
         plt.hist(actions, bins=np.arange(_actions.min(), _actions.max() + 1), label='Actions')
         
         plt.legend()
         plt.savefig(filename)
         print(f"Saved {filename}.png to disk")
+        plt.tight_layout()
         plt.show()
     return episode_rewards
 

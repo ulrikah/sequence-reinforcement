@@ -17,17 +17,7 @@
 
 ## Questions
 
-
-- What criteria should I use for done?
-    - rewards are in range (0.0, 1.0), but random sampling yields a reward of ~0.5
-
-- First step in the snare sequence almost always ends up as close to 1. Any way to avoid that?
-
-- NN spits out sequences between (0.0, 1.0) --> what is the correct
-
-
-
-
+- punish for keeping the same sequence as it is?
 
 ## Alternative way
 
@@ -40,7 +30,7 @@ Output of the neural network is a number that is used to toggle the current step
     -> for a sequence of 16 steps, we need 16 steps for each toggle + 1 additional step for the none_action
 
 A step in the environment consists of:
-    
+
 
 Samplng a random action involves
     -> toggling ONE of the 16 musical steps at random
