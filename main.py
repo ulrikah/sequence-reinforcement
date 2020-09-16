@@ -1,6 +1,6 @@
 from train import train
 from agent import Agent
-from simple_env import SimpleEnv
+from env import SimpleEnv
 
 
 '''
