@@ -1,5 +1,6 @@
 import gym
 import numpy as np
+from metrics import AbsoluteDifference, NormalizedSum
 
 class SequenceActions:
     # TO DO: inherit from gym.Space
@@ -19,15 +20,12 @@ class MidiEnv(gym.Env):
         self.snare_seq = np.zeros(self.get_n_steps())
         
         self.action_space = SequenceActions(n_steps = self.get_n_steps())
-        self.metric = metric
         
-        if self.metric == "diff":
-            self.reward_range = (0.0, 1.0)
-            self.done_range = (0.5, 1.0)
-        
+        if metric == "diff":
+            self.metric = AbsoluteDifference()
+
         if self.metric == "snare_sum":
-            self.reward_range = (0.0, 1.0)
-            self.done_range = (0.2, 0.9)
+            self.metric = NormalizedSum()
     
     def get_n_steps(self):
         return self.n_bars * self.beats_per_bar
@@ -42,12 +40,13 @@ class MidiEnv(gym.Env):
         self.snare_seq = action
         reward = self.calculate_reward(self.kick_seq, action)
         
-        '''
-        # episodes that go outside this range should be considered done
-        _min, _max = self.done_range
-        done = not _min <= reward <= _max
-        '''
-        done = False
+        if self.metric.done_range is not None:
+            assert isinstance(self.metric.done_range, tuple), "The done range should be a tuple with two variables"
+            # pylint: disable=unpacking-non-sequence
+            _min, _max = self.metric.done_range
+            done = not _min <= reward <= _max
+        else:
+            done = False
 
         return self.kick_seq, reward, done, {}
     
@@ -61,15 +60,8 @@ class MidiEnv(gym.Env):
         return
 
     def calculate_reward(self, kick_seq : np.ndarray, snare_seq: np.ndarray):
-        '''Normalized sum to fit in the reward range'''
-        assert kick_seq.shape == snare_seq.shape
-
-        if self.metric == "diff":
-            diff = np.abs(kick_seq - snare_seq)
-            return np.sum(diff / self.get_n_steps())
-
-        if self.metric == "snare_sum":
-            return np.sum(snare_seq / self.get_n_steps())
+        '''Calculate reward based on specified metric'''
+        return self.metric.calculate_reward(kick_seq, snare_seq)
 
     def render(self, log=True):
         '''Renders the np array as a sequence of MIDI notes'''

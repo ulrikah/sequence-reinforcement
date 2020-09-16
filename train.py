@@ -51,7 +51,7 @@ def train(env, agent, n_episodes, max_steps, batch_size,
                 agent.update(batch_size)
 
             if done or step == max_steps - 1:
-                episode_rewards.append(episode_reward)
+                episode_rewards.append(np.mean(episode_reward))
                 break
 
             state = obs
