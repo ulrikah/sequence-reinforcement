@@ -10,7 +10,7 @@ class SimpleEnv(gym.Env):
         self.action_space = gym.spaces.Discrete(self.n_steps + 1)
 
         self.kick_seq = np.array([1.0, .0, .0, .0] * self.n_bars)
-        self.snare_seq = np.zeros(self.n_steps) # better to initialise randomly?
+        self.snare_seq = np.random.choice([0, 1], self.n_steps)
 
         self.metric = metric()
         self.reward_range = self.metric.reward_range
@@ -33,7 +33,7 @@ class SimpleEnv(gym.Env):
 
     def reset(self):
         self.kick_seq = np.array([1.0, .0, .0, .0] * self.n_bars)
-        self.snare_seq = np.zeros(self.n_steps)
+        self.snare_seq = np.random.choice([0, 1], self.n_steps)
         return self.get_state()
 
     def close(self):

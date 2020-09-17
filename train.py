@@ -11,7 +11,9 @@ def train(env, agent, n_episodes, max_steps, batch_size,
     log_interval=100, 
     save_model_to=None, 
     load_model_from=None
-):
+):  
+    ID = int(time())
+
     if load_model_from is not None:
         checkpoint = torch.load(load_model_from)
         print(f"💾 Loading model from {load_model_from}")
@@ -67,7 +69,7 @@ def train(env, agent, n_episodes, max_steps, batch_size,
             if render:
                 env.render()
             if save_model_to is not None and episode > start_from:
-                path = f"{save_model_to}checkpoint_{episode}_{int(time())}.cpt"
+                path = f"{save_model_to}checkpoint_{episode}_{ID}.cpt"
                 save_model(path, 
                 {
                     'episode': episode,
@@ -78,7 +80,7 @@ def train(env, agent, n_episodes, max_steps, batch_size,
                     'saved_at': asctime()
                 })
     if log:
-        filename = f"plots/fig_{int(time())}"
+        filename = f"plots/fig_{episode}_{ID}"
 
         # performance
         plt.subplot(1, 2, 1)
