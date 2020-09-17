@@ -22,6 +22,11 @@ class Agent:
         q_vals = self.model.forward(state).detach().squeeze()
         distribution = Categorical(q_vals)
         return distribution.sample().item()
+    
+    def get_best_action(self, state):
+        state = torch.FloatTensor(state).unsqueeze(0)
+        q_vals = self.model.forward(state).detach().squeeze()
+        return torch.argmax(q_vals).item()
 
     def compute_loss(self, batch):
         states, actions, rewards, next_states, _ = batch

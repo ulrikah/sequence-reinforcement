@@ -1,7 +1,9 @@
 from train import train
+from test import test
 from agent import Agent
 from env import SimpleEnv
 from metrics import AbsoluteDifference, NormalizedSum
+from args import parse_args
 
 
 '''
@@ -22,6 +24,8 @@ SAVE_MODEL_TO = "checkpoints/"
 LOAD_MODEL_FROM = None
 
 def main():
+    args = parse_args()
+
     env = SimpleEnv(n_bars = 2)
     agent = Agent(
         env,
@@ -35,18 +39,23 @@ def main():
     print("Network", agent.model)
     print("")
 
-    train(
-        env,
-        agent,
-        n_episodes=N_EPISODES,
-        max_steps=MAX_STEPS,
-        batch_size=BATCH_SIZE,
-        eps_decay=EPS_DECAY,
-        log=LOG,
-        log_interval=LOG_INTERVAL if LOG_INTERVAL <= N_EPISODES else N_EPISODES,
-        save_model_to=SAVE_MODEL_TO,
-        load_model_from=LOAD_MODEL_FROM
-    )
+
+    if args.mode == "train":
+        train(
+            env,
+            agent,
+            n_episodes=N_EPISODES,
+            max_steps=MAX_STEPS,
+            batch_size=BATCH_SIZE,
+            eps_decay=EPS_DECAY,
+            log=LOG,
+            log_interval=LOG_INTERVAL if LOG_INTERVAL <= N_EPISODES else N_EPISODES,
+            save_model_to=SAVE_MODEL_TO,
+            load_model_from=LOAD_MODEL_FROM
+        )
+
+    elif args.mode == "test":
+        test(env, agent, checkpoint_path=args.checkpoint)
 
 if __name__ == "__main__":
     main()
