@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.distributions import Categorical
 import numpy as np
 
@@ -15,7 +16,6 @@ class Agent:
         self.replay_buffer = ReplayBuffer(max_size=buffer_size)
         self.model = DQN(in_dim, out_dim)
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=learning_rate)
-        self.loss = nn.MSELoss()
 
     def get_action(self, state):
         state = torch.FloatTensor(state).unsqueeze(0)
@@ -25,17 +25,16 @@ class Agent:
 
     def compute_loss(self, batch):
         states, actions, rewards, next_states, _ = batch
-        states = torch.FloatTensor(states)
-        actions = torch.LongTensor(actions)
-        rewards = torch.FloatTensor(rewards)
-        next_states = torch.FloatTensor(next_states)
+        state_batch = torch.FloatTensor(states)
+        action_batch = torch.LongTensor(actions)
+        reward_batch = torch.FloatTensor(rewards)
+        next_state_batch = torch.FloatTensor(next_states)
 
-        curr_q = self.model.forward(states).gather(1, actions.unsqueeze(1)).squeeze(1)
-        next_q = self.model.forward(next_states)
-        max_next_q = torch.max(next_q, 1)[0]
-        expected_q = rewards.squeeze(1) + self.gamma * max_next_q
+        state_action_values = self.model.forward(state_batch).gather(1, action_batch.unsqueeze(1)).squeeze(1)
+        next_state_values = self.model.forward(next_state_batch).max(1)[0].detach()
+        expected_state_action_values = (next_state_values * self.gamma) + reward_batch.squeeze(1)
 
-        return self.loss(curr_q, expected_q)
+        return F.smooth_l1_loss(state_action_values, expected_state_action_values)
 
     def update(self, batch_size):
         batch = self.replay_buffer.sample(batch_size)
@@ -43,4 +42,6 @@ class Agent:
 
         self.optimizer.zero_grad()
         loss.backward()
+        for param in self.model.parameters():
+            param.grad.data.clamp_(-1, 1)
         self.optimizer.step()

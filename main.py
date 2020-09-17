@@ -1,6 +1,7 @@
 from train import train
 from agent import Agent
 from env import SimpleEnv
+from metrics import AbsoluteDifference, NormalizedSum
 
 
 '''
@@ -9,18 +10,19 @@ from env import SimpleEnv
 '''
 
 # System variables that should be set from CLI args
-N_EPISODES = 1000
+N_EPISODES = 20000
 MAX_STEPS = 30
-BATCH_SIZE = 256
+BATCH_SIZE = 2
 LR = 1e-2
-GAMMA = 0.99
+GAMMA = 0.7
+EPS_DECAY = 10000
 LOG = True
-LOG_INTERVAL = 100
-SAVE_MODEL_TO = None # "checkpoints/"
+LOG_INTERVAL = 10
+SAVE_MODEL_TO = "checkpoints/"
 LOAD_MODEL_FROM = None
 
 def main():
-    env = SimpleEnv(n_bars=2)
+    env = SimpleEnv(n_bars = 2)
     agent = Agent(
         env,
         in_dim = len(env.get_state()),
@@ -39,6 +41,7 @@ def main():
         n_episodes=N_EPISODES,
         max_steps=MAX_STEPS,
         batch_size=BATCH_SIZE,
+        eps_decay=EPS_DECAY,
         log=LOG,
         log_interval=LOG_INTERVAL if LOG_INTERVAL <= N_EPISODES else N_EPISODES,
         save_model_to=SAVE_MODEL_TO,

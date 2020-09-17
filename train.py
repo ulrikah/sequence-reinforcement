@@ -1,9 +1,11 @@
-import torch
 from time import time, asctime
+from collections import Counter
+import torch
 import numpy as np
 from matplotlib import pyplot as plt
 
-def train(env, agent, n_episodes, max_steps, batch_size,
+def train(env, agent, n_episodes, max_steps, batch_size, 
+    eps_decay = 1000,
     render=True, 
     log=True,
     log_interval=100, 
@@ -36,7 +38,7 @@ def train(env, agent, n_episodes, max_steps, batch_size,
         state = env.reset()
         episode_reward = []
 
-        eps = epsilon_threshold(episode, n_episodes)
+        eps = epsilon_threshold(episode, eps_decay=eps_decay)
         epsilons.append(eps)
         should_explore = np.random.random_sample() < eps
 
@@ -62,8 +64,6 @@ def train(env, agent, n_episodes, max_steps, batch_size,
 
         if log and episode % info_interval == 0:
             print("Reward for episode", episode, ":", reward, "with action", action)
-            print(state, "[state]")
-            print(next_state, "[next_state]")
             if render:
                 env.render()
             if save_model_to is not None and episode > start_from:
@@ -90,8 +90,11 @@ def train(env, agent, n_episodes, max_steps, batch_size,
 
         # action distribution
         plt.subplot(1, 2, 2)
-        _actions = np.array(actions)
-        plt.hist(actions, bins=np.arange(_actions.min(), _actions.max() + 1), label='Actions')
+        labels, values = zip(*sorted(Counter(actions).items()))
+        indexes = np.arange(len(labels))
+        width = 1
+        plt.bar(indexes, values, width)
+        plt.xticks(indexes + width * 0.5, labels)
         
         plt.legend()
         plt.savefig(filename)
@@ -100,5 +103,5 @@ def train(env, agent, n_episodes, max_steps, batch_size,
         plt.show()
     return episode_rewards
 
-def epsilon_threshold(episode, n_episodes, eps_start = 0.9, eps_end = 0.05, eps_decay = 2):
-    return eps_end + (eps_start - eps_end) * np.exp(-1. * (episode / n_episodes) * eps_decay)
+def epsilon_threshold(episode, eps_start = 0.9, eps_end = 0.05, eps_decay = 200):
+    return eps_end + (eps_start - eps_end) * np.exp(-1. * episode / eps_decay)

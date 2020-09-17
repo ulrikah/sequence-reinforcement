@@ -3,7 +3,7 @@ import numpy as np
 from metrics import AbsoluteDifference
 
 class SimpleEnv(gym.Env):
-    def __init__(self, n_bars):
+    def __init__(self, n_bars, metric = AbsoluteDifference):
         self.n_bars = n_bars
         self.n_steps = n_bars * 4
         
@@ -12,7 +12,7 @@ class SimpleEnv(gym.Env):
         self.kick_seq = np.array([1.0, .0, .0, .0] * self.n_bars)
         self.snare_seq = np.zeros(self.n_steps) # better to initialise randomly?
 
-        self.metric = AbsoluteDifference()
+        self.metric = metric()
         self.reward_range = self.metric.reward_range
 
     def step(self, action : int):
