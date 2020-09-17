@@ -34,7 +34,7 @@ def train(env, agent, n_episodes, max_steps, batch_size,
         info_interval = (n_episodes - start_from) // log_interval
 
     actions = []
-    for episode in range(start_from, n_episodes):
+    for episode in range(start_from, n_episodes + 1):
         state = env.reset()
         episode_reward = []
 
@@ -63,22 +63,20 @@ def train(env, agent, n_episodes, max_steps, batch_size,
             state = next_state
 
         if log and episode % info_interval == 0:
-            print("Reward for episode", episode, ":", reward, "with action", action)
+            print("Mean reward for episode", episode, ":", np.mean(episode_reward))
             if render:
                 env.render()
             if save_model_to is not None and episode > start_from:
                 path = f"{save_model_to}checkpoint_{episode}_{int(time())}.cpt"
-                print("💾 Saving model to", path)
-                torch.save({
+                save_model(path, 
+                {
                     'episode': episode,
                     'episode_rewards': episode_rewards,
                     'epsilons': epsilons,
                     'model_state_dict': agent.model.state_dict(),
                     'optimizer_state_dict': agent.optimizer.state_dict(),
                     'saved_at': asctime()
-                }, path)
-
-
+                })
     if log:
         filename = f"plots/fig_{int(time())}"
 
@@ -105,3 +103,7 @@ def train(env, agent, n_episodes, max_steps, batch_size,
 
 def epsilon_threshold(episode, eps_start = 0.9, eps_end = 0.05, eps_decay = 200):
     return eps_end + (eps_start - eps_end) * np.exp(-1. * episode / eps_decay)
+
+def save_model(path, blob):
+    print("💾 Saving model to", path)
+    torch.save(blob, path)

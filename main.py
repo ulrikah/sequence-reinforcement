@@ -12,9 +12,9 @@ from args import parse_args
 '''
 
 # System variables that should be set from CLI args
-N_EPISODES = 20000
+N_EPISODES = 10000
 MAX_STEPS = 30
-BATCH_SIZE = 2
+BATCH_SIZE = 32
 LR = 1e-2
 GAMMA = 0.7
 EPS_DECAY = 10000

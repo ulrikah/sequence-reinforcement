@@ -22,7 +22,7 @@ class Agent:
         q_vals = self.model.forward(state).detach().squeeze()
         distribution = Categorical(q_vals)
         return distribution.sample().item()
-    
+
     def get_best_action(self, state):
         state = torch.FloatTensor(state).unsqueeze(0)
         q_vals = self.model.forward(state).detach().squeeze()

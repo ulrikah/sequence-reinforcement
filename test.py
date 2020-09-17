@@ -14,10 +14,9 @@ def test(env, agent, checkpoint_path=None):
     agent.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
     state = env.reset()
-    for i in range(10):
-        # print(state, "[state]", i)
+    for _ in range(10):
         action = agent.get_action(state)
         next_state, reward, _, _ = env.step(action)
-        # print(next_state, "[next_state]", i)
         print("Reward :", reward, "with action", action)
         env.render()
+        state = next_state
