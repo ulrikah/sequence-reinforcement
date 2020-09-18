@@ -12,7 +12,7 @@ from args import parse_args
 '''
 
 # System variables that should be set from CLI args
-N_EPISODES = 1000
+N_EPISODES = 100000
 MAX_STEPS = 50
 BATCH_SIZE = 32
 LR = 1e-2
@@ -51,7 +51,7 @@ def main():
             log=LOG,
             log_interval=LOG_INTERVAL if LOG_INTERVAL <= N_EPISODES else N_EPISODES,
             save_model_to=SAVE_MODEL_TO,
-            load_model_from=LOAD_MODEL_FROM
+            load_model_from=args.checkpoint
         )
 
     elif args.mode == "test":

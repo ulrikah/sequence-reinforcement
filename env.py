@@ -7,7 +7,7 @@ class SimpleEnv(gym.Env):
         self.n_bars = n_bars
         self.n_steps = n_bars * 4
         
-        self.action_space = gym.spaces.Discrete(self.n_steps + 1)
+        self.action_space = gym.spaces.Discrete(self.n_steps)
 
         self.kick_seq = np.array([1.0, .0, .0, .0] * self.n_bars)
         self.snare_seq = np.random.choice([0, 1], self.n_steps)
@@ -19,8 +19,7 @@ class SimpleEnv(gym.Env):
         '''Performs one step in the environment where action is an integer of 0 - n_steps'''
         assert self.action_space.contains(action), "Action is outside the action space"
 
-        if action < self.n_steps:
-            self.snare_seq[action] = 1 - self.snare_seq[action]
+        self.snare_seq[action] = 1 - self.snare_seq[action]
 
         reward = self.calculate_reward(self.kick_seq, self.snare_seq)
         
@@ -31,9 +30,12 @@ class SimpleEnv(gym.Env):
         assert self.kick_seq.shape == self.snare_seq.shape, "The two patterns don't have the same shape"
         return np.concatenate((self.kick_seq, self.snare_seq))
 
-    def reset(self):
+    def reset(self, snare_seq=None):
         self.kick_seq = np.array([1.0, .0, .0, .0] * self.n_bars)
-        self.snare_seq = np.random.choice([0, 1], self.n_steps)
+        if snare_seq is not None:
+            self.snare_seq = snare_seq
+        else:
+            self.snare_seq = np.random.choice([0, 1], self.n_steps)
         return self.get_state()
 
     def close(self):

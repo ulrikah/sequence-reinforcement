@@ -13,10 +13,10 @@ def test(env, agent, checkpoint_path=None):
     agent.model.load_state_dict(checkpoint['model_state_dict'])
     agent.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
-    state = env.reset()
-    for _ in range(10):
+    state = env.reset(snare_seq = np.array([1.0, 0.0, 0.0, 0.0] * env.n_bars))
+    for i in range(50):
         action = agent.get_action(state)
         next_state, reward, _, _ = env.step(action)
-        print("Reward :", reward, "with action", action)
+        print("Reward", i, ":", reward, "with action", action)
         env.render()
         state = next_state
