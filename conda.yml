@@ -1,0 +1,13 @@
+name: ml
+channels:
+  - defaults
+dependencies:
+  - jupyterlab
+  - librosa
+  - gym
+  - pytorch
+  - pylint
+  - xeus-python
+  - torchvision
+  - tqdm
+
