@@ -1,23 +1,16 @@
-from train import train
 from test import test
+from train import train
 from agent import Agent
 from env import SimpleEnv
-from metrics import AbsoluteDifference, NormalizedSum
 from args import parse_args
 
-
-'''
-    inspired by RaveForce: 
-    https://github.com/chaosprint/RaveForce/blob/master/Python/raveforce.py
-'''
-
-# System variables that should be set from CLI args
-N_EPISODES = 100000
-MAX_STEPS = 50
+# System variables (that should be set from CLI args)
+N_EPISODES = 1000 # total number of episode to train for
+MAX_STEPS = 50 # number of steps per episode
 BATCH_SIZE = 32
-LR = 1e-2
-GAMMA = 0.7
-EPS_DECAY = 10000
+LR = 1e-2 # learning rate
+GAMMA = 0.7 # discount rate for the Q-learning
+EPS_DECAY = 10000 # decay for the epsilon-greedy selection
 LOG = True
 LOG_INTERVAL = 10
 SAVE_MODEL_TO = "checkpoints/"
@@ -38,7 +31,6 @@ def main():
     print("")
     print("Network", agent.model)
     print("")
-
 
     if args.mode == "train":
         train(
